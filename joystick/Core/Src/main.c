@@ -79,7 +79,7 @@ PUTCHAR_PROTOTYPE
 }
 
 uint16_t adc_value[2];
-int8_t i2c_tx_buf[4] = {0,0,0,0};
+uint8_t i2c_tx_buf[4] = {0,0,0,0};
 
 /* USER CODE END 0 */
 

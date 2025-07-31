@@ -4,7 +4,7 @@
 
 extern I2C_HandleTypeDef hi2c1;
 
-extern int8_t i2c_tx_buf[4];
+extern uint8_t i2c_tx_buf[4];
 uint8_t i2c_rx_buf[1] = {0};
 
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode)
@@ -31,5 +31,9 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c){
 }
 
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c){
-  HAL_I2C_EnableListen_IT(&hi2c1);
+  uint32_t err = HAL_I2C_GetError(hi2c);
+  printf("err:%lu\r\n", err);
+  if(HAL_I2C_GetState(hi2c)!=  HAL_I2C_STATE_LISTEN  ){
+    HAL_I2C_EnableListen_IT(&hi2c1);
+  }
 }
