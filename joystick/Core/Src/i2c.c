@@ -25,7 +25,9 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c){
 }
 
 void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c){
-  HAL_I2C_EnableListen_IT(&hi2c1);
+  if(HAL_I2C_GetState(hi2c)!=  HAL_I2C_STATE_LISTEN  ){
+    HAL_I2C_EnableListen_IT(&hi2c1);
+  }
 }
 
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c){
