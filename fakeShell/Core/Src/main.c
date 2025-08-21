@@ -52,12 +52,34 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+char msg[] = "ywang@stm32:~$";
+char res[256] = {0};
+char *c_p = res;
+char cur = {0};
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
+  if(huart->Instance == USART1){
+    if (cur == '\r' || cur == '\n'){
+        HAL_UART_Transmit(huart, (uint8_t*)"\r\n", 2, 1000);
+        HAL_UART_Transmit(huart, (uint8_t*)res, strlen(res), 1000);
+        HAL_UART_Transmit(huart, (uint8_t*)": command not found", strlen(": command not found"), 1000);
+        HAL_UART_Transmit(huart, (uint8_t*)"\r\n", 2, 1000);
+        HAL_UART_Transmit(huart, (uint8_t*)msg, strlen(msg), 1000);
+        res[0] = '\0';
+        c_p = res;
+      }
+      else{
+        HAL_UART_Transmit(huart, (uint8_t*)&cur, 1, HAL_MAX_DELAY);
+        *c_p++ = cur;
+        *c_p = '\0'; 
+      }
+      HAL_UART_Receive_IT(&huart1, (uint8_t*)&cur, 1);
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -68,7 +90,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  memset(&huart1, 0, sizeof(huart1));
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -92,35 +114,17 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  char msg[] = "ywang@stm32:~$";
-  char res[256] = {0};
-  char *c_p = res;
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), 1000);
+  HAL_UART_Receive_IT(&huart1, (uint8_t*)&cur, 1);
+  HAL_SuspendTick(); 
   while (1)
   {
+    __WFI(); 
     /* USER CODE END WHILE */
-    char cur = {0};
-    if(HAL_UART_Receive(&huart1, (uint8_t*)&cur, 1, 1000)==HAL_OK){
-      if (cur == '\r' || cur == '\n'){
-        HAL_UART_Transmit(&huart1, (uint8_t*)"\r\n", 2, 1000);
-        HAL_UART_Transmit(&huart1, (uint8_t*)res, strlen(res), 1000);
-        HAL_UART_Transmit(&huart1, (uint8_t*)": command not found", strlen(": command not found"), 1000);
-        HAL_UART_Transmit(&huart1, (uint8_t*)"\r\n", 2, 1000);
-        HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), 1000);
-        res[0] = '\0';
-        c_p = res;
-      }
-      else{
-        HAL_UART_Transmit(&huart1, (uint8_t*)&cur, 1, 1000);
-        *c_p++ = cur;
-        *c_p = '\0'; 
-      }
-    }
 
     /* USER CODE BEGIN 3 */
   }
@@ -177,7 +181,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE BEGIN USART1_Init 1 */
   huart1.gState = HAL_UART_STATE_RESET;
-  
+
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
   huart1.Init.BaudRate = 115200;

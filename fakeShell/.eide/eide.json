@@ -25,7 +25,7 @@
         "cpuType": "Cortex-M3",
         "archExtensions": "",
         "floatingPointHardware": "none",
-        "scatterFilePath": "STM32F103C8TX_FLASH.ld",
+        "scatterFilePath": "",
         "useCustomScatterFile": true,
         "storageLayout": {
           "RAM": [],
@@ -93,6 +93,9 @@
             "ASM_FLAGS": "-DDEBUG"
           },
           "linker": {
+            "$outputTaskExcludes": [
+              ".bin"
+            ],
             "output-format": "elf",
             "remove-unused-input-sections": true,
             "LD_FLAGS": "-TSTM32F103C8TX_FLASH.ld",
@@ -116,19 +119,26 @@
         },
         "options": "null"
       },
-      "uploader": "JLink",
+      "uploader": "OpenOCD",
       "uploadConfig": {
         "bin": "",
-        "baseAddr": "",
-        "cpuInfo": {
-          "vendor": "null",
-          "cpuName": "null"
-        },
-        "proType": 1,
-        "speed": 8000,
-        "otherCmds": ""
+        "target": "stm32f1x",
+        "interface": "stlink",
+        "baseAddr": "0x08000000"
       },
-      "uploadConfigMap": {},
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "null",
+            "cpuName": "null"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        }
+      },
       "builderOptions": {
         "GCC": {
           "version": 5,
@@ -153,6 +163,9 @@
             "ASM_FLAGS": ""
           },
           "linker": {
+            "$outputTaskExcludes": [
+              ".bin"
+            ],
             "output-format": "elf",
             "remove-unused-input-sections": true,
             "LD_FLAGS": "",
